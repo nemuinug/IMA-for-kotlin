@@ -1,0 +1,112 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/list_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@android:color/white">
+
+
+
+
+    <Switch
+        android:id="@+id/itemSwitch"
+        android:layout_width="53dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:layout_marginStart="4dp"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="4dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/itemSwitch"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <LinearLayout
+        android:id="@+id/itemTextContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/itemImage"
+        app:layout_constraintEnd_toStartOf="@id/buttonIncrease"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="12dp">
+
+        <TextView
+            android:id="@+id/itemTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="no title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:id="@+id/itemQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="数量: 0"
+            android:textSize="16sp"
+            android:textColor="#666666"/>
+    </LinearLayout>
+
+    <!-- 🔹 + ボタン -->
+    <Button
+        android:id="@+id/buttonIncrease"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:backgroundTint="#4CAF50"
+        android:text="@string/increase_button"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:padding="0dp"
+        android:gravity="center"
+        app:layout_constraintStart_toEndOf="@id/itemTextContainer"
+        app:layout_constraintEnd_toStartOf="@id/buttonDecrease"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="12dp"/>
+
+    <!-- 🔹 - ボタン -->
+    <Button
+        android:id="@+id/buttonDecrease"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:backgroundTint="#F44336"
+        android:text="@string/decrease_button"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:padding="0dp"
+        android:gravity="center"
+        app:layout_constraintStart_toEndOf="@id/buttonIncrease"
+        app:layout_constraintEnd_toStartOf="@id/itemArrow"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="8dp"/>
+
+
+    <!-- 🔹 矢印 -->
+    <ImageView
+        android:id="@+id/itemArrow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/buttonDecrease"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_more" />
+</androidx.constraintlayout.widget.ConstraintLayout>
