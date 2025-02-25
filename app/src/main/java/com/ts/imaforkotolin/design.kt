@@ -5,16 +5,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 
-fun setupRecyclerView(context: Context, recyclerView: RecyclerView) {
+fun setupRecyclerView(context: Context, recyclerView: RecyclerView, databaseHelper: DatabaseHelper) {
     recyclerView.layoutManager = LinearLayoutManager(context)
 
-    val itemList = listOf(
-        Item("アイテム1"),
-        Item("アイテム2"),
-        Item("アイテム3")
-    )
-
-    Log.d("DEBUG", "RecyclerView に ${itemList.size} 個のアイテムをセット")  //  デバッグログ
+    // 🔹 データベースからアイテムを取得
+    val itemList = databaseHelper.getAllItems().toMutableList()
+    Log.d("DEBUG", "データベースから ${itemList.size} 個のアイテムを取得")
 
     recyclerView.adapter = ItemAdapter(itemList)
 }
+

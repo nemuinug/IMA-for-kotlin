@@ -1,49 +1,64 @@
 package com.ts.imaforkotolin
 
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.enableEdgeToEdge
+import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import android.util.Log  // 追加
+import android.widget.TextView
+
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var databaseHelper: DatabaseHelper
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: ItemAdapter
+    private lateinit var totalQuantityLabel: TextView
+    private lateinit var clearButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        // 🔹 UI コンポーネントの取得
+        recyclerView = findViewById(R.id.listid)
+        totalQuantityLabel = findViewById(R.id.totalQuantityLabel)
+        clearButton = findViewById(R.id.clearButton)
+
+        // 🔹 データベースヘルパーを初期化
+        databaseHelper = DatabaseHelper(this)
+
+        // 🔹 RecyclerView のセットアップ
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        val itemList = databaseHelper.getAllItems().toMutableList()
+        adapter = ItemAdapter(itemList)
+        recyclerView.adapter = adapter
+
+        // 🔹 クリアボタンの処理
+        clearButton.setOnClickListener {
+            databaseHelper.resetDatabase(this)
+            Toast.makeText(this, "リストをクリアしました", Toast.LENGTH_SHORT).show()
+            refreshRecyclerView()
         }
 
-        // データベースを開く
-        databaseHelper = DatabaseHelper(this)
-        val db = databaseHelper.openDatabase()
-        Log.d("DEBUG", "データベースを開きました: ${databaseHelper.getDatabasePath()}")  // ログ出力
+        // 🔹 初期データの読み込み
+        refreshRecyclerView()
+    }
 
-        val recyclerView: RecyclerView = findViewById(R.id.listid)
+    private fun refreshRecyclerView() {
+        val updatedList = databaseHelper.getAllItems().toMutableList()
 
-        // `LinearLayoutManager` を設定
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        if (::adapter.isInitialized) {
+            adapter.updateItems(updatedList)
+        } else {
+            adapter = ItemAdapter(updatedList)
+            recyclerView.adapter = adapter
+        }
 
-        // 初期データを追加
-        val itemList = listOf(
-            Item("アイテム1", 2, false),
-            Item("アイテム2", 5, true),
-            Item("アイテム3", 1, false)
-        )
-
-        Log.d("DEBUG", "RecyclerView に ${itemList.size} 個のアイテムをセット")  // ログ追加
-
-        val adapter = ItemAdapter(itemList)
-        recyclerView.adapter = adapter
+        // 🔹 合計数を計算して表示
+        val totalQuantity = updatedList.sumOf { it.quantity }
+        totalQuantityLabel.text = "合計: $totalQuantity"
     }
 }
