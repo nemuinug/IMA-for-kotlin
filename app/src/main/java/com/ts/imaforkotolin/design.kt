@@ -1,20 +1,20 @@
-package com.example.app
+package com.ts.imaforkotolin
 
 import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.util.Log
 
-// RecyclerView のセットアップを行う関数
 fun setupRecyclerView(context: Context, recyclerView: RecyclerView) {
     recyclerView.layoutManager = LinearLayoutManager(context)
 
-    // 初期データ（数量 0 のアイテム）
     val itemList = listOf(
         Item("アイテム1"),
         Item("アイテム2"),
         Item("アイテム3")
     )
 
-    // RecyclerView に Adapter を適用
+    Log.d("DEBUG", "RecyclerView に ${itemList.size} 個のアイテムをセット")  //  デバッグログ
+
     recyclerView.adapter = ItemAdapter(itemList)
 }
