@@ -8,10 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- 🔹 ヘッダー -->
-
-    <!-- 🔹 入力エリア -->
-
     <TextView
         android:id="@+id/headerTitle"
         android:layout_width="412dp"
@@ -146,6 +142,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
