@@ -11,11 +11,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // データベース情報
         private const val DATABASE_NAME = "inventory.db"
         private const val DATABASE_VERSION = 3
-
-        // テーブル名
         const val TABLE_NAME = "Inventory"
-
-        // カラム名
         const val COLUMN_ID = "id"
         const val COLUMN_NAME = "name"
         const val COLUMN_QUANTITY = "quantity"
@@ -24,16 +20,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_COMMENT = "comment"
         const val COLUMN_IMAGE_STRING = "imageString"
         const val COLUMN_IS_DELETED = "isDeleted"
-
-        // `isChecked` の値を定数化
         const val IS_CHECKED_TRUE = 1
         const val IS_CHECKED_FALSE = 0
-        const val DEFAULT_IS_CHECKED = IS_CHECKED_FALSE
-
-        // `isDeleted` のデフォルト値
-        const val DEFAULT_IS_DELETED = 0
-
-        // `isChecked` の変換メソッド
+        const val IS_DELETED_FALSE = 0
         fun intToBoolean(value: Int): Boolean = value != IS_CHECKED_FALSE
         fun booleanToInt(value: Boolean): Int = if (value) IS_CHECKED_TRUE else IS_CHECKED_FALSE
     }
@@ -45,10 +34,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             $COLUMN_NAME TEXT NOT NULL,
             $COLUMN_QUANTITY INTEGER NOT NULL,
             $COLUMN_COMMENT TEXT,
-            $COLUMN_IS_CHECKED INTEGER NOT NULL DEFAULT $DEFAULT_IS_CHECKED,
+            $COLUMN_IS_CHECKED INTEGER NOT NULL DEFAULT $IS_CHECKED_FALSE,
             $COLUMN_CREATED_TIME TEXT NOT NULL,
             $COLUMN_IMAGE_STRING TEXT,
-            $COLUMN_IS_DELETED INTEGER NOT NULL DEFAULT $DEFAULT_IS_DELETED
+            $COLUMN_IS_DELETED INTEGER NOT NULL DEFAULT $IS_DELETED_FALSE
         );
         """.trimIndent()
         db.execSQL(createTableQuery)
@@ -66,7 +55,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             val values = ContentValues().apply {
                 put(COLUMN_NAME, name)
                 put(COLUMN_QUANTITY, quantity)
-                put(COLUMN_IS_CHECKED, DEFAULT_IS_CHECKED)
+                put(COLUMN_IS_CHECKED, IS_CHECKED_FALSE)
                 put(COLUMN_CREATED_TIME, System.currentTimeMillis().toString())
             }
 
@@ -136,8 +125,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     fun resetDatabase(context: Context) {
         context.deleteDatabase(DATABASE_NAME)
         println("⚠️ データベースを削除しました: $DATABASE_NAME")
-
-        // 🔹 データベースを削除後に新しく作成する
         val db = this.writableDatabase
         onCreate(db)
     }

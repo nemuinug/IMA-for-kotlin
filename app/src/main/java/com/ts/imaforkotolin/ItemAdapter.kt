@@ -11,6 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 class ItemAdapter(private val itemList: MutableList<Item>) :
     RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
+    companion object {
+        // 数量の最大値・最小値を明示
+        const val MIN_QUANTITY = 0
+    }
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val itemSwitch: SwitchCompat = view.findViewById(R.id.itemSwitch)
         val itemText: TextView = view.findViewById(R.id.itemTitle)
@@ -29,52 +34,34 @@ class ItemAdapter(private val itemList: MutableList<Item>) :
         val item = itemList[position]
         holder.itemText.text = item.name
         holder.itemQuantityTextView.text = "数量: ${item.quantity}"
-        // **スイッチの初期状態を設定**
+
         holder.itemSwitch.setOnCheckedChangeListener(null) // 一旦リスナーを解除
         holder.itemSwitch.isChecked = item.isChecked
 
         holder.itemSwitch.setOnCheckedChangeListener { _, isChecked ->
             val dbHelper = DatabaseHelper(holder.itemView.context)
-
-            // ✅ `isChecked` の変更をデータに反映
             item.isChecked = isChecked
             dbHelper.updateIsChecked(item.id, isChecked)
-
-            // ✅ 合計数を更新
-            (holder.itemView.context as? MainActivity)?.updateTotalQuantity()
-
             notifyItemChanged(holder.adapterPosition)
         }
 
         holder.buttonIncrease.setOnClickListener {
-            item.quantity += 1
-            val dbHelper = DatabaseHelper(holder.itemView.context)
-            dbHelper.updateQuantity(item.name, item.quantity)
-            holder.itemQuantityTextView.text = "数量: ${item.quantity}"
-            (holder.itemView.context as? MainActivity)?.updateTotalQuantity() // ✅ 合計を更新
+            if (item.quantity < MAX_QUANTITY) {
+                item.quantity += 1
+                val dbHelper = DatabaseHelper(holder.itemView.context)
+                dbHelper.updateQuantity(item.name, item.quantity)
+                holder.itemQuantityTextView.text = "数量: ${item.quantity}"
+            }
         }
 
         holder.buttonDecrease.setOnClickListener {
-            if (item.quantity > 0) {
+            if (item.quantity > MIN_QUANTITY) {
                 item.quantity -= 1
                 val dbHelper = DatabaseHelper(holder.itemView.context)
                 dbHelper.updateQuantity(item.name, item.quantity)
                 holder.itemQuantityTextView.text = "数量: ${item.quantity}"
-                (holder.itemView.context as? MainActivity)?.updateTotalQuantity() // ✅ 合計を更新
             }
         }
     }
-
     override fun getItemCount() = itemList.size
-
-    fun addItem(item: Item) {
-        itemList.add(item)
-        notifyItemInserted(itemList.lastIndex)
-    }
-
-    fun updateItems(newItems: List<Item>) {
-        itemList.clear()
-        itemList.addAll(newItems)
-        notifyDataSetChanged()
-    }
 }
