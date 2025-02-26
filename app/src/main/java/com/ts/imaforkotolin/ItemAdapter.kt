@@ -29,7 +29,6 @@ class ItemAdapter(private val itemList: MutableList<Item>) :
         val item = itemList[position]
         holder.itemText.text = item.name
         holder.itemQuantityTextView.text = "数量: ${item.quantity}"
-
         // **スイッチの初期状態を設定**
         holder.itemSwitch.setOnCheckedChangeListener(null) // 一旦リスナーを解除
         holder.itemSwitch.isChecked = item.isChecked
@@ -46,10 +45,6 @@ class ItemAdapter(private val itemList: MutableList<Item>) :
 
             notifyItemChanged(holder.adapterPosition)
         }
-
-
-
-
 
         holder.buttonIncrease.setOnClickListener {
             item.quantity += 1
@@ -68,7 +63,6 @@ class ItemAdapter(private val itemList: MutableList<Item>) :
                 (holder.itemView.context as? MainActivity)?.updateTotalQuantity() // ✅ 合計を更新
             }
         }
-
     }
 
     override fun getItemCount() = itemList.size

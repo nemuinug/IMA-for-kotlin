@@ -16,9 +16,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ItemAdapter
     private lateinit var totalQuantityLabel: TextView
     private lateinit var clearButton: Button
-    private lateinit var addButton: Button  // ✅ 追加
-    private lateinit var itemTitle: EditText  // ✅ 追加
-    private lateinit var itemQuantity: EditText  // ✅ 追加
+    private lateinit var addButton: Button
+    private lateinit var itemTitle: EditText
+    private lateinit var itemQuantity: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +52,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "リストをクリアしました", Toast.LENGTH_SHORT).show()
             refreshRecyclerView()
         }
-
-        // 🔹 初期データの読み込み
         refreshRecyclerView()
     }
 
@@ -71,30 +69,14 @@ class MainActivity : AppCompatActivity() {
 
     fun updateTotalQuantity() {
         val updatedList = databaseHelper.getAllItems().toMutableList()
-
-        // ✅ isChecked が true のアイテムのみ合計
         val checkedItems = updatedList.filter { it.isChecked }
-
         println("🔍 updateTotalQuantity() 実行 - チェックされたアイテム:")
         checkedItems.forEach { item ->
             println("✅ id=${item.id}, name=${item.name}: 数量=${item.quantity}")
         }
-
-
         val totalQuantity = checkedItems.sumOf { it.quantity }
-
         runOnUiThread {
             totalQuantityLabel.text = "合計: $totalQuantity"
         }
     }
-
-
-
-
-
-
-
-
-
-
 }
