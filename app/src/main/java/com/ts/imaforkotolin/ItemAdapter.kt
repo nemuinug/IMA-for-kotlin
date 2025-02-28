@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ItemAdapter(
     private val itemList: MutableList<Item>,
-    private val onCheckedChange: () -> Unit // ✅ コールバックを追加
+    private val onCheckedChange: () -> Unit
 ) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
     companion object {
@@ -45,7 +45,7 @@ class ItemAdapter(
             dbHelper.updateIsChecked(item.id, isChecked)
             notifyItemChanged(holder.adapterPosition)
 
-            onCheckedChange() // ✅ コールバックを呼び出す
+            onCheckedChange()
         }
 
         holder.buttonIncrease.setOnClickListener {
@@ -53,7 +53,7 @@ class ItemAdapter(
             val dbHelper = DatabaseHelper(holder.itemView.context)
             dbHelper.updateQuantity(item.name, item.quantity)
             holder.itemQuantityTextView.text = "数量: ${item.quantity}"
-            onCheckedChange() // ✅ 数量が変わった時も合計を更新
+            onCheckedChange()
         }
 
         holder.buttonDecrease.setOnClickListener {
@@ -62,7 +62,7 @@ class ItemAdapter(
                 val dbHelper = DatabaseHelper(holder.itemView.context)
                 dbHelper.updateQuantity(item.name, item.quantity)
                 holder.itemQuantityTextView.text = "数量: ${item.quantity}"
-                onCheckedChange() // ✅ 数量が変わった時も合計を更新
+                onCheckedChange()
             }
         }
     }

@@ -12,5 +12,5 @@ fun setupRecyclerView(context: Context, recyclerView: RecyclerView, databaseHelp
     val itemList = databaseHelper.getAllItems().toMutableList()
     Log.d("DEBUG", "データベースから ${itemList.size} 個のアイテムを取得")
 
-    recyclerView.adapter = ItemAdapter(itemList, onCheckedChange) // ✅ コールバックを渡す
+    recyclerView.adapter = ItemAdapter(itemList, onCheckedChange)
 }

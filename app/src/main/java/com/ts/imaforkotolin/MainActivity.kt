@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val itemList = databaseHelper.getAllItems().toMutableList()
 
         adapter = ItemAdapter(itemList) {
-            updateTotalQuantity() // ✅ チェック変更時に updateTotalQuantity を呼び出す
+            updateTotalQuantity()
         }
 
         recyclerView.adapter = adapter
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     fun refreshRecyclerView() {
         val updatedList = databaseHelper.getAllItems().toMutableList()
-        adapter.updateItems(updatedList)  // ✅ updateItems を呼び出す
+        adapter.updateItems(updatedList)
 
         val checkedQuantity = updatedList.filter { it.isChecked }.sumOf { it.quantity }
 
