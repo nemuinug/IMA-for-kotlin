@@ -16,7 +16,7 @@ fun setupAddButton(
     nameInput: EditText,
     quantityInput: EditText,
     addButton: Button,
-    refreshRecyclerView: () -> Unit  // ✅ コールバックでリスト更新
+    refreshRecyclerView: () -> Unit  // コールバックでリスト更新
 ) {
     addButton.setOnClickListener {
         val name = nameInput.text.toString().trim()  // 修正
