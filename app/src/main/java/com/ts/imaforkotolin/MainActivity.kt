@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.util.Log
 import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
@@ -54,15 +53,19 @@ class MainActivity : AppCompatActivity() {
         refreshRecyclerView()
         updateTotalQuantity()
 
-        setupRecyclerView(this, recyclerView, databaseHelper) {
+        // setupRecyclerView() の呼び出しを削除し、最初に設定したアダプタを統一
+        adapter = ItemAdapter(itemList) {
             updateTotalQuantity()
         }
+        recyclerView.adapter = adapter
+
     }
 
 
     fun refreshRecyclerView() {
         val updatedList = databaseHelper.getAllItems().toMutableList()
         adapter.updateItems(updatedList)
+        recyclerView.adapter = adapter
 
         val checkedQuantity = updatedList.filter { it.isChecked }.sumOf { it.quantity }
 

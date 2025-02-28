@@ -1,10 +1,12 @@
 package com.ts.imaforkotolin
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -46,6 +48,12 @@ class ItemAdapter(
         holder.itemSwitch.setOnCheckedChangeListener(null)
         holder.itemSwitch.isChecked = item.isChecked
 
+        holder.itemView.findViewById<ImageView>(R.id.itemImage).setImageBitmap(
+            item.image?.let { BitmapFactory.decodeByteArray(it, 0, it.size) } ?: BitmapFactory.decodeResource(
+                holder.itemView.context.resources, R.drawable.ic_default_image
+            )
+        )
+
         holder.itemSwitch.setOnCheckedChangeListener { _, isChecked ->
             val dbHelper = DatabaseHelper(holder.itemView.context)
             item.isChecked = isChecked
@@ -76,11 +84,13 @@ class ItemAdapter(
         // **アイテムクリックで SubActivity を開く**
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, SubActivity::class.java).apply {
+                putExtra("ITEM_ID", item.id)  // 🔹 ITEM_ID を渡す
                 putExtra("ITEM_TITLE", item.name)
                 putExtra("ITEM_QUANTITY", item.quantity)
             }
             holder.itemView.context.startActivity(intent)
         }
+
     }
     override fun getItemCount() = itemList.size
 }
