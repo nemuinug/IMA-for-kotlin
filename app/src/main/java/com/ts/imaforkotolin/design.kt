@@ -14,5 +14,3 @@ fun setupRecyclerView(context: Context, recyclerView: RecyclerView, databaseHelp
 
     recyclerView.adapter = ItemAdapter(itemList, onCheckedChange) // ✅ コールバックを渡す
 }
-
-
