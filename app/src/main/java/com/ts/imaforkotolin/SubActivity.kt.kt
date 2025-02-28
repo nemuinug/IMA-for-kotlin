@@ -133,8 +133,6 @@ class SubActivity : AppCompatActivity() {
         }
     }
 
-
-
     // **ギャラリーから画像を選択後の処理**
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -162,7 +160,6 @@ class SubActivity : AppCompatActivity() {
 
         finish()  // 画面を閉じる
     }
-
 
     // **Bitmap を ByteArray に変換**
     private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {

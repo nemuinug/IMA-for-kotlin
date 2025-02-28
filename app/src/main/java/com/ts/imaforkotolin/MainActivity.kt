@@ -60,8 +60,6 @@ class MainActivity : AppCompatActivity() {
             adapter.updateItems(emptyList())  // リストを空にする
             recyclerView.visibility = View.GONE  // RecyclerView を非表示に
         }
-
-
         refreshRecyclerView()
         updateTotalQuantity()
 

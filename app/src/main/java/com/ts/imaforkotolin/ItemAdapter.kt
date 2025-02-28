@@ -102,8 +102,6 @@ class ItemAdapter(
             }
             activity?.startActivityForResult(intent, REQUEST_CODE_SUB_ACTIVITY)
         }
-
-
     }
     override fun getItemCount() = itemList.size
     fun getItemAt(position: Int): Item {
