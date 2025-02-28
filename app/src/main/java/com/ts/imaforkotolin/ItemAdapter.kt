@@ -8,11 +8,12 @@ import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class ItemAdapter(private val itemList: MutableList<Item>) :
-    RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+class ItemAdapter(
+    private val itemList: MutableList<Item>,
+    private val onCheckedChange: () -> Unit // ✅ コールバックを追加
+) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
     companion object {
-        // 数量の最大値・最小値を明示
         const val MIN_QUANTITY = 0
     }
 
@@ -35,7 +36,7 @@ class ItemAdapter(private val itemList: MutableList<Item>) :
         holder.itemText.text = item.name
         holder.itemQuantityTextView.text = "数量: ${item.quantity}"
 
-        holder.itemSwitch.setOnCheckedChangeListener(null) // 一旦リスナーを解除
+        holder.itemSwitch.setOnCheckedChangeListener(null)
         holder.itemSwitch.isChecked = item.isChecked
 
         holder.itemSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -43,15 +44,16 @@ class ItemAdapter(private val itemList: MutableList<Item>) :
             item.isChecked = isChecked
             dbHelper.updateIsChecked(item.id, isChecked)
             notifyItemChanged(holder.adapterPosition)
+
+            onCheckedChange() // ✅ コールバックを呼び出す
         }
 
         holder.buttonIncrease.setOnClickListener {
-            if (item.quantity < MAX_QUANTITY) {
-                item.quantity += 1
-                val dbHelper = DatabaseHelper(holder.itemView.context)
-                dbHelper.updateQuantity(item.name, item.quantity)
-                holder.itemQuantityTextView.text = "数量: ${item.quantity}"
-            }
+            item.quantity += 1
+            val dbHelper = DatabaseHelper(holder.itemView.context)
+            dbHelper.updateQuantity(item.name, item.quantity)
+            holder.itemQuantityTextView.text = "数量: ${item.quantity}"
+            onCheckedChange() // ✅ 数量が変わった時も合計を更新
         }
 
         holder.buttonDecrease.setOnClickListener {
@@ -60,8 +62,16 @@ class ItemAdapter(private val itemList: MutableList<Item>) :
                 val dbHelper = DatabaseHelper(holder.itemView.context)
                 dbHelper.updateQuantity(item.name, item.quantity)
                 holder.itemQuantityTextView.text = "数量: ${item.quantity}"
+                onCheckedChange() // ✅ 数量が変わった時も合計を更新
             }
         }
     }
+
+    fun updateItems(newItems: List<Item>) {
+        itemList.clear()
+        itemList.addAll(newItems)
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount() = itemList.size
 }
