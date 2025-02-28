@@ -1,6 +1,9 @@
 package com.ts.imaforkotolin
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 
 class MainActivity : AppCompatActivity() {
     private lateinit var databaseHelper: DatabaseHelper
@@ -18,6 +22,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addButton: Button
     private lateinit var itemTitle: EditText
     private lateinit var itemQuantity: EditText
+    companion object {
+        private const val REQUEST_CODE_SUB_ACTIVITY = 1001  // 適当な整数を指定
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +53,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         clearButton.setOnClickListener {
-            databaseHelper.resetDatabase(this)
+            databaseHelper.resetDatabase()  // 論理削除
+
             Toast.makeText(this, "リストをクリアしました", Toast.LENGTH_SHORT).show()
-            refreshRecyclerView()
+
+            adapter.updateItems(emptyList())  // リストを空にする
+            recyclerView.visibility = View.GONE  // RecyclerView を非表示に
         }
         refreshRecyclerView()
         updateTotalQuantity()
@@ -59,20 +69,50 @@ class MainActivity : AppCompatActivity() {
         }
         recyclerView.adapter = adapter
 
+        // **スワイプ処理を追加**
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val itemToDelete = adapter.getItemAt(position)
+
+                databaseHelper.deleteItemById(itemToDelete.id)  // **DBで論理削除**
+                refreshRecyclerView()  // **リストを更新**
+
+                Toast.makeText(applicationContext, "アイテムを削除しました", Toast.LENGTH_SHORT).show()
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_SUB_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            val updatedItemId = data?.getIntExtra("UPDATED_ITEM_ID", -1)
+            if (updatedItemId != null && updatedItemId != -1) {
+                refreshRecyclerView()  // コメントや画像を即時更新
+            }
+        }
+    }
 
     fun refreshRecyclerView() {
         val updatedList = databaseHelper.getAllItems().toMutableList()
-        adapter.updateItems(updatedList)
-        recyclerView.adapter = adapter
 
-        val checkedQuantity = updatedList.filter { it.isChecked }.sumOf { it.quantity }
-
-        runOnUiThread {
-            updateTotalQuantity()
-            totalQuantityLabel.text = "合計: $checkedQuantity"
+        if (updatedList.isEmpty()) {
+            recyclerView.visibility = View.GONE  // **リストが空なら非表示**
+        } else {
+            recyclerView.visibility = View.VISIBLE  // **アイテムがあるなら表示**
         }
+
+        adapter.updateItems(updatedList)  // **リスト更新**
     }
 
     fun updateTotalQuantity() {
