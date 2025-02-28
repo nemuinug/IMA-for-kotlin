@@ -1,5 +1,6 @@
 package com.ts.imaforkotolin
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ class ItemAdapter(
 
     companion object {
         const val MIN_QUANTITY = 0
+        private const val REQUEST_CODE_SUB_ACTIVITY = 1001
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -37,7 +39,7 @@ class ItemAdapter(
     fun updateItems(newItems: List<Item>) {
         itemList.clear()
         itemList.addAll(newItems)
-        notifyDataSetChanged()
+        notifyDataSetChanged()  // **画像も含めて UI を更新**
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -47,6 +49,17 @@ class ItemAdapter(
 
         holder.itemSwitch.setOnCheckedChangeListener(null)
         holder.itemSwitch.isChecked = item.isChecked
+
+        // **画像をデータベースの最新データで更新**
+        val dbHelper = DatabaseHelper(holder.itemView.context)
+        val updatedItem = dbHelper.getItemById(item.id)
+        if (updatedItem?.image != null) {
+            holder.itemView.findViewById<ImageView>(R.id.itemImage).setImageBitmap(
+                BitmapFactory.decodeByteArray(updatedItem.image, 0, updatedItem.image!!.size)
+            )
+        } else {
+            holder.itemView.findViewById<ImageView>(R.id.itemImage).setImageResource(R.drawable.ic_default_image)
+        }
 
         holder.itemView.findViewById<ImageView>(R.id.itemImage).setImageBitmap(
             item.image?.let { BitmapFactory.decodeByteArray(it, 0, it.size) } ?: BitmapFactory.decodeResource(
@@ -83,14 +96,17 @@ class ItemAdapter(
 
         // **アイテムクリックで SubActivity を開く**
         holder.itemView.setOnClickListener {
+            val activity = holder.itemView.context as? Activity
             val intent = Intent(holder.itemView.context, SubActivity::class.java).apply {
-                putExtra("ITEM_ID", item.id)  // 🔹 ITEM_ID を渡す
-                putExtra("ITEM_TITLE", item.name)
-                putExtra("ITEM_QUANTITY", item.quantity)
+                putExtra("ITEM_ID", item.id)
             }
-            holder.itemView.context.startActivity(intent)
+            activity?.startActivityForResult(intent, REQUEST_CODE_SUB_ACTIVITY)
         }
+
 
     }
     override fun getItemCount() = itemList.size
+    fun getItemAt(position: Int): Item {
+        return itemList[position]
+    }
 }

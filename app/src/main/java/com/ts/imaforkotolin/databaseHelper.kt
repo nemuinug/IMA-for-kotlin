@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import java.io.ByteArrayOutputStream
 
 class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -78,26 +79,27 @@ class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, D
     fun getAllItems(): List<Item> {
         val itemList = mutableListOf<Item>()
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME", null)
+
+        // isDeleted = 0 のデータのみ取得（論理削除されたデータは除外）
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COLUMN_IS_DELETED = 0", null)
 
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
             val name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME))
             val quantity = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_QUANTITY))
             val isCheckedInt = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IS_CHECKED))
-            val isChecked = isCheckedInt != 0  // 🔹 Boolean に変換
+            val isChecked = isCheckedInt != 0
             val createdTime = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_TIME))
             val comment = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMMENT))
             val imageBlob = cursor.getBlob(cursor.getColumnIndexOrThrow(COLUMN_IMAGE))
 
-            val image = imageBlob ?: bitmapToByteArray(getDefaultImage())  // 🔹 デフォルト画像
+            val image = imageBlob ?: bitmapToByteArray(getDefaultImage())
 
             itemList.add(Item(id, name, quantity, isChecked, createdTime, comment, image))
         }
         cursor.close()
         return itemList
     }
-
 
     fun getItemById(id: Int): Item? {
         val db = readableDatabase
@@ -154,15 +156,20 @@ class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, D
         val values = ContentValues().apply {
             put(COLUMN_IMAGE, newImage)
         }
-        db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(id.toString()))
+        val rowsUpdated = db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(id.toString()))
+        Log.d("Database", "画像更新: ID=$id, 更新行数=$rowsUpdated")
         db.close()
     }
 
-    fun resetDatabase(mainActivity: MainActivity) {
-        context.deleteDatabase(DATABASE_NAME)
-        val db = this.writableDatabase
-        onCreate(db)
-        println("⚠️ データベースを削除しました: $DATABASE_NAME")
+    fun resetDatabase() {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_IS_DELETED, 1)  // isDeleted を 1 に設定（論理削除）
+        }
+        db.update(TABLE_NAME, values, null, null)  // すべてのアイテムを削除済み扱いに
+        db.close()
+
+        println("⚠️ すべてのアイテムを論理削除しました")
     }
 
     fun bitmapToByteArray(bitmap: Bitmap?): ByteArray {
@@ -173,5 +180,16 @@ class DatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, D
 
     fun getDefaultImage(): Bitmap {
         return BitmapFactory.decodeResource(context.resources, R.drawable.ic_default_image)
+    }
+
+    fun deleteItemById(itemId: Int) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_IS_DELETED, 1)  // **論理削除フラグを立てる**
+        }
+        db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(itemId.toString()))
+        db.close()
+
+        println("🗑️ アイテム削除: ID=$itemId")
     }
 }
