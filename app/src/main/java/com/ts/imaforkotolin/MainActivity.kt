@@ -24,7 +24,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🔹 UI コンポーネントの取得
+        databaseHelper = DatabaseHelper(this)
+
         recyclerView = findViewById(R.id.listid)
         totalQuantityLabel = findViewById(R.id.totalQuantityLabel)
         clearButton = findViewById(R.id.clearButton)
@@ -32,28 +33,32 @@ class MainActivity : AppCompatActivity() {
         itemTitle = findViewById(R.id.itemTitle)
         itemQuantity = findViewById(R.id.itemQuantity)
 
-        // 🔹 データベースヘルパーを初期化
-        databaseHelper = DatabaseHelper(this)
-
-        // 🔹 RecyclerView のセットアップ
         recyclerView.layoutManager = LinearLayoutManager(this)
         val itemList = databaseHelper.getAllItems().toMutableList()
-        adapter = ItemAdapter(itemList)
+
+        adapter = ItemAdapter(itemList) {
+            updateTotalQuantity()
+        }
+
         recyclerView.adapter = adapter
 
-        // 🔹 アイテム追加ボタンの設定
         setupAddButton(this, databaseHelper, adapter, itemTitle, itemQuantity, addButton) {
             refreshRecyclerView()
         }
 
-        // 🔹 クリアボタンの処理
         clearButton.setOnClickListener {
             databaseHelper.resetDatabase(this)
             Toast.makeText(this, "リストをクリアしました", Toast.LENGTH_SHORT).show()
             refreshRecyclerView()
         }
         refreshRecyclerView()
+        updateTotalQuantity()
+
+        setupRecyclerView(this, recyclerView, databaseHelper) {
+            updateTotalQuantity()
+        }
     }
+
 
     fun refreshRecyclerView() {
         val updatedList = databaseHelper.getAllItems().toMutableList()
@@ -62,8 +67,8 @@ class MainActivity : AppCompatActivity() {
         val checkedQuantity = updatedList.filter { it.isChecked }.sumOf { it.quantity }
 
         runOnUiThread {
+            updateTotalQuantity()
             totalQuantityLabel.text = "合計: $checkedQuantity"
-            adapter.notifyDataSetChanged()  // RecyclerView全体をリフレッシュ
         }
     }
 
