@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SubActivity"
+    android:background="@android:color/white">
+
+    <!-- タイトルバー -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="#DFF0D8"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Back ラベル（左端） -->
+        <TextView
+            android:id="@+id/backLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="戻る"
+            android:textColor="#007AFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <!-- タイトルラベル（中央配置） -->
+        <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="在庫管理"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 画像表示 -->
+    <ImageView
+        android:id="@+id/itemImageDetail"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintTop_toBottomOf="@id/headerContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- ID 表示 -->
+    <TextView
+        android:id="@+id/itemIdDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID: 1"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/itemImageDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- タイトル -->
+    <TextView
+        android:id="@+id/itemTitleDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="no title"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/itemIdDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- 数量 -->
+    <TextView
+        android:id="@+id/itemQuantityDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="数量: 0"
+        android:textSize="18sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/itemTitleDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- 作成時間 -->
+    <TextView
+        android:id="@+id/itemCreatedTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="作成時間: 02/19 14:31:18"
+        android:textSize="16sp"
+        android:textColor="#666666"
+        android:gravity="center"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/itemQuantityDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- コメント入力 -->
+    <EditText
+        android:id="@+id/itemCommentDetail"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@android:color/white"
+        android:hint="コメントなし"
+        android:textColorHint="#AAAAAA"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:gravity="top"
+        app:layout_constraintTop_toBottomOf="@id/itemCreatedTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- 保存ボタン -->
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="保存"
+        android:textSize="16sp"
+        android:backgroundTint="#2196F3"
+        android:textColor="@android:color/white"
+        android:drawableStart="@android:drawable/ic_menu_save"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        app:layout_constraintTop_toBottomOf="@id/itemCommentDetail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
