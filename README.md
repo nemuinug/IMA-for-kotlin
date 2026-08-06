@@ -1,6 +1,7 @@
 # IMA-for-kotlin
 
-作成日：Apr 5, 2025
+作成日：Feb 28, 2025
+
 Kotlin / Android で作った在庫管理アプリです。
 C# / WinForms で作った [inventManagementApp](https://github.com/nemuinug/inventManagementApp) と
 同じ題材を、Android 向けに実装し直したものです。
